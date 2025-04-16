@@ -42,12 +42,12 @@ watchEffect(() => {
             <div
                 v-for="date in daysInActualMonth"
                 :key="date"
-                class="group relative flex size-16 cursor-default items-center justify-center overflow-hidden rounded-md border transition-all hover:translate-y-0.5 hover:shadow-md"
+                class="group relative flex size-16 cursor-default items-center justify-center overflow-hidden rounded-md border border-zinc-300 transition-all hover:translate-y-0.5 hover:scale-105 hover:shadow-lg"
                 :class="actualDay === date ? 'font-bold text-blue-500' : ''"
                 @click="openModal(date)"
             >
                 <div
-                    class="absolute top-0 left-0 z-0 w-full bg-yellow-400 transition-all duration-300 ease-in-out"
+                    class="absolute top-0 left-0 z-0 w-full bg-orange-400 transition-all duration-300 ease-in-out"
                     :style="{
                         height: `${transactions?.[date]?.gasto || 0}%`,
                         opacity: props.hoverType === 'gasto' ? 1 : 0,

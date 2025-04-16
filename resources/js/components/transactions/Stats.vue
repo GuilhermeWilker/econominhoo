@@ -23,7 +23,7 @@ const emit = defineEmits(['hoverType']);
                 :class="props.color ? props.color : 'bg-zinc-500'"
             ></div>
             <p
-                class="absolute top-0 right-2 z-10 scale-95 rounded-md px-2 text-xs font-medium text-white opacity-0 transition-all duration-300 ease-in-out group-hover:scale-100 group-hover:opacity-100"
+                class="absolute top-0 right-2 z-10 w-fit scale-95 rounded-md px-2 text-xs font-medium text-white opacity-0 shadow-md transition-all duration-300 ease-in-out group-hover:scale-100 group-hover:opacity-100"
                 :class="props.color ? props.color : 'bg-zinc-500'"
             >
                 {{ cost + '%' }}

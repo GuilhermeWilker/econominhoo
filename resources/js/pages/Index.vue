@@ -2,10 +2,9 @@
 import { usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-import Footer from '@/components/Footer.vue';
-import Header from '@/components/Header.vue';
 import TransactionsCalendar from '@/components/transactions/Calendar.vue';
 import TransactionsStats from '@/components/transactions/Stats.vue';
+import DefaultLayout from '@/layouts/DefaultLayout.vue';
 
 interface Transaction {
     gasto?: number;
@@ -46,9 +45,7 @@ const saldo = totalEntradas - totalGastos;
 </script>
 
 <template>
-    <main class="mx-auto max-w-[90%] px-4 py-8 sm:px-6 md:max-w-[80%] md:px-8 lg:px-16">
-        <Header />
-
+    <DefaultLayout>
         <section class="flex flex-col gap-5 px-4 md:flex-row md:px-8">
             <article class="mt-4 w-full md:w-6/12 lg:w-7/12">
                 <h3 class="text-4xl font-bold">Econominhoo - finanças de um jeito fácil</h3>
@@ -126,7 +123,5 @@ const saldo = totalEntradas - totalGastos;
                 </div>
             </article>
         </section>
-
-        <Footer />
-    </main>
+    </DefaultLayout>
 </template>
