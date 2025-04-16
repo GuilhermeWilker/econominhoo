@@ -2,21 +2,53 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
     public function index()
     {
 
-        $transactionsByDay = [
-            2 => ['entrada' => 1133, 'gasto' => 95],
-            15 => ['entrada' => 3, 'gasto' => 12],
-            17 => ['entrada' => 12, 'gasto' => 557],
-            8 => ['entrada' => 0, 'gasto' => 557],
-            27 => ['entrada' => 24, 'gasto' => 59],
-            30 => ['entrada' => 1340, 'gasto' => 234],
-        ];
+        $userId = auth()->id();
+        $currentMonth = now()->format('Y-m');
+
+        $rawTransactions = DB::table('transactions')
+            ->selectRaw(
+                "CAST(strftime('%d', date) AS INTEGER) as day, type, SUM(amount) as total"
+            )
+            ->where('user_id', $userId)
+            ->whereBetween('date', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now()->endOfMonth()
+            ])
+            ->groupBy('day', 'type')
+            ->get();
+
+        $transactionsByDay = [];
+
+        foreach ($rawTransactions as $t) {
+            $day = (int) $t->day;
+
+            $typeMap = [
+                'income' => 'entrada',
+                'expense' => 'gasto',
+                'investment' => 'investimento',
+            ];
+
+            $type = $typeMap[$t->type] ?? $t->type;
+
+            if (!isset($transactionsByDay[$day])) {
+                $transactionsByDay[$day] = [
+                    'entrada' => 0,
+                    'gasto' => 0,
+                    'investimento' => 0,
+                ];
+            }
+
+            $transactionsByDay[$day][$type] = (int) $t->total;
+        }
 
         return inertia('Index', [
             'transactionsByDay' => $transactionsByDay,

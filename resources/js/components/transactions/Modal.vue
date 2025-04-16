@@ -1,62 +1,92 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { router, useForm, usePage } from '@inertiajs/vue3';
+import { computed, watch } from 'vue';
+
+const page = usePage();
 
 const props = defineProps({
-      selectedDay: String,
-      showModal: Boolean,
-})
+    selectedDay: String,
+    showModal: Boolean,
+});
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close']);
 
 const fullDate = computed(() => {
-      const day = (props.selectedDay || '').padStart(2, '0')
-      const now = new Date()
-      const month = String(now.getMonth() + 1).padStart(2, '0')
-      const year = now.getFullYear()
+    const day = props.selectedDay?.padStart(2, '0') || '01';
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
 
-      return `${day}/${month}/${year}`
-})
+    return `${year}-${month}-${day}`;
+});
+
+const form = useForm({
+    user_id: page.props.auth?.user.id,
+    date: null,
+    type: null,
+    amount: null,
+    description: null,
+});
+
+watch(
+    fullDate,
+    (newDate) => {
+        form.date = newDate;
+    },
+    { immediate: true },
+);
 </script>
 
 <template>
-      <div v-show="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-            <div class="bg-white border rounded-md p-6 space-y-4 shadow-lg border-zinc-300 w-96 relative">
-                  <!-- Botão de fechar -->
-                  <button @click="emit('close')"
-                        class="absolute top-2 right-5 text-zinc-600 hover:text-zinc-900 text-3xl">
-                        &times;
-                  </button>
+    <div v-show="showModal" class="bg-opacity-50 fixed inset-0 z-10 flex items-center justify-center bg-black">
+        <div class="relative w-96 space-y-4 rounded-md border border-zinc-300 bg-white p-6 shadow-lg">
+            <!-- Botão de fechar -->
+            <button @click="emit('close')" class="absolute top-2 right-5 text-3xl text-zinc-600 hover:text-zinc-900">&times;</button>
 
-                  <h2 class="text-lg font-semibold">Adicionar Boleto - Dia <span v-text="props.selectedDay"></span></h2>
+            <h2 class="text-lg font-semibold">Adicionar Boleto - Dia <span v-text="props.selectedDay"></span></h2>
 
-                  <form action="" class="space-y-4">
-                        <div>
-                              <label class="block text-sm">Descrição</label>
-                              <input type="text" placeholder="Descrição"
-                                    class="w-full border border-zinc-400 p-2 px-4 rounded-sm" />
-                        </div>
+            <form
+                @submit.prevent="
+                    form.post('/transaction', {
+                        onSuccess: () => {
+                            form.reset();
+                            emit('close');
+                            router.reload({ only: ['transactionsByDay'] });
+                        },
+                    })
+                "
+                class="space-y-4"
+            >
+                <div>
+                    <label class="block text-sm">Descrição</label>
+                    <input type="text" placeholder="Descrição" class="w-full rounded-sm border border-zinc-400 p-2 px-4" v-model="form.description" />
+                </div>
 
-                        <div class="flex gap-2 items-center">
-                              <div class="w-full">
-                                    <label class="block text-sm">Valor</label>
-                                    <input type="number" placeholder="2 400,00"
-                                          class="w-full border border-zinc-400 p-2 px-4 rounded-sm placeholder:text-sm" />
-                              </div>
+                <input type="hidden" v-model="form.date" />
 
-                              <div class="w-full">
-                                    <label class="block text-sm">Status</label>
-                                    <select class="w-full border border-zinc-400 p-2 rounded-sm">
-                                          <option>Recorrente</option>
-                                          <option>Entrada</option>
-                                          <option>Gasto</option>
-                                    </select>
-                              </div>
-                        </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-full">
+                        <label class="block text-sm">Valor</label>
+                        <input
+                            type="number"
+                            placeholder="2 400,00"
+                            class="w-full rounded-sm border border-zinc-400 p-2 px-4 placeholder:text-sm"
+                            v-model="form.amount"
+                        />
+                    </div>
+                    <div class="w-full">
+                        <label class="block text-sm">Tipo</label>
+                        <select class="w-full rounded-sm border border-zinc-400 p-2" v-model="form.type">
+                            <option value="" disabled selected>Selecione o tipo</option>
+                            <option value="investment">Investimento</option>
+                            <option value="income">Entrada</option>
+                            <option value="expense">Gasto</option>
+                        </select>
+                    </div>
+                </div>
 
-                        <button class="bg-zinc-900 text-white rounded-sm p-2 px-6 w-full text-sm">
-                              Adicionar Boleto
-                        </button>
-                  </form>
-            </div>
-      </div>
+                <button class="w-full rounded-sm bg-zinc-900 p-2 px-6 text-sm text-white">Adicionar Boleto</button>
+            </form>
+        </div>
+    </div>
 </template>
