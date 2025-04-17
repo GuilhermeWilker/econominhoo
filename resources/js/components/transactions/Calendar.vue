@@ -21,6 +21,13 @@ const daysInActualMonth = computed(() => {
     return new Date(year, month, 0).getDate();
 });
 
+// Calcular o dia da semana que o mês atual começa (0 = domingo, 1 = segunda, ...)
+const firstDayOfMonth = computed(() => {
+    const date = new Date();
+    date.setDate(1); // Configura o primeiro dia do mês
+    return date.getDay();
+});
+
 const actualDay = computed(() => new Date().getDate());
 
 const transactions = JSON.parse(JSON.stringify(page.props.transactionsByDay));
@@ -73,28 +80,31 @@ const stackedBars = computed(() => {
 
 <template>
     <div>
-        <article class="mt-8 flex flex-wrap gap-2">
+        <article class="mt-8 flex flex-wrap justify-start gap-2">
+            <!-- Células vazias para os dias do mês anterior -->
+            <div v-for="n in firstDayOfMonth" :key="'empty-' + n" class="flex size-13"></div>
+
+            <!-- Dias do mês atual -->
             <div
-                v-for="date in daysInActualMonth"
-                :key="date"
+                v-for="i in daysInActualMonth"
+                :key="i"
                 class="group relative flex size-13 cursor-default items-center justify-center overflow-hidden rounded-md border border-zinc-300 transition-all hover:translate-y-0.5 hover:scale-105 hover:shadow-lg"
-                :class="actualDay === date ? 'font-bold text-blue-500' : ''"
-                @click="openModal(date)"
+                :class="actualDay === i ? 'font-bold text-blue-500' : ''"
+                @click="openModal(i)"
             >
                 <div
-                    v-for="(bar, index) in stackedBars[date]"
+                    v-for="(bar, index) in stackedBars[i]"
                     :key="index"
                     class="absolute left-0 w-full transition-all duration-300 ease-in-out"
                     :class="bar.color"
                     :style="{
                         height: `${bar.height}%`,
-                        bottom: `${stackedBars[date].slice(0, index).reduce((acc, b) => acc + b.height, 0)}%`,
+                        bottom: `${stackedBars[i].slice(0, index).reduce((acc, b) => acc + b.height, 0)}%`,
                         opacity: props.indicador ? 1 : 0,
                     }"
                 />
-
                 <div class="z-10">
-                    <p>{{ date <= 9 ? '0' + date : date }}</p>
+                    <p>{{ i <= 9 ? '0' + i : i }}</p>
                 </div>
             </div>
         </article>
