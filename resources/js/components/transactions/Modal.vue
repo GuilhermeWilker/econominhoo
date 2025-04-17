@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, watch } from 'vue';
+import { toast } from 'vue-sonner';
 
 const page = usePage();
 
@@ -22,7 +23,7 @@ const fullDate = computed(() => {
 
 const form = useForm({
     user_id: page.props.auth?.user.id,
-    date: null,
+    date: null as string | null,
     type: null,
     amount: null,
     description: null,
@@ -51,6 +52,13 @@ watch(
                         onSuccess: () => {
                             form.reset();
                             emit('close');
+                            toast(fullDate, {
+                                description: 'A transação foi adicionada com sucesso.',
+                                action: {
+                                    label: 'Fechar',
+                                },
+                            });
+
                             router.reload({ only: ['transactionsByDay'] });
                         },
                     })

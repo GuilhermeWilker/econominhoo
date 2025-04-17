@@ -6,6 +6,7 @@ import TransactionsModal from '@/components/transactions/Modal.vue';
 
 const props = defineProps({
     hoverType: String,
+    indicador: Boolean,
 });
 
 const page = usePage();
@@ -34,41 +35,63 @@ watchEffect(() => {
         router.reload({ only: ['transactionsByDay'] });
     }
 });
+
+const stackedBars = computed(() => {
+    const result: Record<number, { color: string; height: number }[]> = {};
+
+    for (const [dayStr, data] of Object.entries(transactions)) {
+        const day = parseInt(dayStr);
+        const entrada = data.entrada || 0;
+        const gasto = data.gasto || 0;
+        const investimento = data.investimento || 0;
+
+        const total = entrada + gasto + investimento;
+
+        if (total === 0) continue;
+
+        const stack: { color: string; height: number }[] = [];
+
+        if (entrada) {
+            stack.push({ color: 'bg-green-400', height: (entrada / total) * 100 });
+        }
+        if (gasto) {
+            stack.push({ color: 'bg-orange-400', height: (gasto / total) * 100 });
+        }
+        if (investimento) {
+            stack.push({ color: 'bg-blue-400', height: (investimento / total) * 100 });
+        }
+
+        // Ordenar do menor para o maior
+        stack.sort((a, b) => a.height - b.height);
+
+        result[day] = stack;
+    }
+
+    return result;
+});
 </script>
 
 <template>
     <div>
-        <article class="mt-4 flex flex-wrap gap-2">
+        <article class="mt-8 flex flex-wrap gap-2">
             <div
                 v-for="date in daysInActualMonth"
                 :key="date"
-                class="group relative flex size-16 cursor-default items-center justify-center overflow-hidden rounded-md border border-zinc-300 transition-all hover:translate-y-0.5 hover:scale-105 hover:shadow-lg"
+                class="group relative flex size-13 cursor-default items-center justify-center overflow-hidden rounded-md border border-zinc-300 transition-all hover:translate-y-0.5 hover:scale-105 hover:shadow-lg"
                 :class="actualDay === date ? 'font-bold text-blue-500' : ''"
                 @click="openModal(date)"
             >
                 <div
-                    class="absolute top-0 left-0 z-0 w-full bg-orange-400 transition-all duration-300 ease-in-out"
+                    v-for="(bar, index) in stackedBars[date]"
+                    :key="index"
+                    class="absolute left-0 w-full transition-all duration-300 ease-in-out"
+                    :class="bar.color"
                     :style="{
-                        height: `${transactions?.[date]?.gasto || 0}%`,
-                        opacity: props.hoverType === 'gasto' ? 1 : 0,
+                        height: `${bar.height}%`,
+                        bottom: `${stackedBars[date].slice(0, index).reduce((acc, b) => acc + b.height, 0)}%`,
+                        opacity: props.indicador ? 1 : 0,
                     }"
-                ></div>
-
-                <div
-                    class="absolute bottom-0 left-0 z-0 w-full bg-green-400 transition-all duration-300 ease-in-out"
-                    :style="{
-                        height: `${transactions?.[date]?.entrada || 0}%`,
-                        opacity: props.hoverType === 'entrada' ? 1 : 0,
-                    }"
-                ></div>
-
-                <div
-                    class="absolute bottom-0 left-0 z-0 w-full bg-blue-400 transition-all duration-300 ease-in-out"
-                    :style="{
-                        height: `${transactions?.[date]?.investimento || 0}%`,
-                        opacity: props.hoverType === 'investimento' ? 1 : 0,
-                    }"
-                ></div>
+                />
 
                 <div class="z-10">
                     <p>{{ date <= 9 ? '0' + date : date }}</p>

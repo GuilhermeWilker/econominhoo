@@ -1,6 +1,8 @@
 <script lang="ts" setup>
+import { indicador } from '@/stores/useIndicator';
 import { usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { Toaster } from 'vue-sonner';
 
 import TransactionsCalendar from '@/components/transactions/Calendar.vue';
 import TransactionsStats from '@/components/transactions/Stats.vue';
@@ -46,6 +48,8 @@ const saldo = totalEntradas - totalGastos;
 
 <template>
     <DefaultLayout>
+        <Toaster position="top-right" />
+
         <section class="flex flex-col gap-5 px-4 md:flex-row md:px-8">
             <article class="mt-4 w-full md:w-6/12 lg:w-7/12">
                 <h3 class="text-4xl font-bold">Econominhoo - finanças de um jeito fácil</h3>
@@ -56,7 +60,7 @@ const saldo = totalEntradas - totalGastos;
                     >.
                 </p>
 
-                <TransactionsCalendar :hoverType="hoverType" />
+                <TransactionsCalendar :hoverType="hoverType" :indicador="indicador" />
             </article>
 
             <article class="w-full md:w-5/12 lg:w-3/5">
@@ -93,25 +97,10 @@ const saldo = totalEntradas - totalGastos;
                     </div>
 
                     <div
-                        class="mx-auto flex w-96 items-center justify-between rounded-sm border border-zinc-300 p-4 transition-all hover:w-full hover:shadow-md"
+                        class="group mx-auto flex w-96 items-center justify-between rounded-sm border border-zinc-300 p-4 transition-all hover:w-full hover:shadow-md"
                     >
-                        #11 Boleto de energia
-
+                        <p class="text-sm group-hover:text-[16px]">#12 Boleto Água - <span class="font-semibold">R$ 850,40</span></p>
                         <span class="inline-block rounded-full bg-blue-200 px-4 text-sm text-blue-600">Pago</span>
-                    </div>
-
-                    <div
-                        class="mx-auto flex w-96 items-center justify-between rounded-sm border border-zinc-300 p-4 transition-all hover:w-full hover:shadow-md"
-                    >
-                        #02 Boleto de água
-                        <span class="inline-block rounded-full bg-orange-200 px-4 text-sm text-orange-600">Pendente</span>
-                    </div>
-
-                    <div
-                        class="mx-auto flex w-96 items-center justify-between rounded-sm border border-zinc-300 p-4 transition-all hover:w-full hover:shadow-md"
-                    >
-                        #21 Boleto de energia
-                        <span class="inline-block rounded-full bg-red-200 px-4 text-sm text-red-600">Atrasado</span>
                     </div>
 
                     <div
