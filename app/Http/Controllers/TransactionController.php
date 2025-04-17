@@ -20,7 +20,7 @@ class TransactionController extends Controller
         if ($validated) {
             Transaction::create($validated);
 
-            return back()->with('success', 'Transaction created successfully');
+            return redirect()->route('home');
         }
 
         return back()->with('error', 'Failed to create transaction');
