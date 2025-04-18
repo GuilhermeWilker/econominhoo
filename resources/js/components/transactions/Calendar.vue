@@ -59,13 +59,13 @@ const stackedBars = computed(() => {
         const stack: { color: string; height: number }[] = [];
 
         if (entrada) {
-            stack.push({ color: 'bg-green-400', height: (entrada / total) * 100 });
+            stack.push({ color: 'bg-green-400', height: (entrada / total) * 100, type: 'entrada' });
         }
         if (gasto) {
-            stack.push({ color: 'bg-orange-400', height: (gasto / total) * 100 });
+            stack.push({ color: 'bg-orange-400', height: (gasto / total) * 100, type: 'gasto' });
         }
         if (investimento) {
-            stack.push({ color: 'bg-blue-400', height: (investimento / total) * 100 });
+            stack.push({ color: 'bg-blue-400', height: (investimento / total) * 100, type: 'investimento' });
         }
 
         // Ordenar do menor para o maior
@@ -100,7 +100,7 @@ const stackedBars = computed(() => {
                     :style="{
                         height: `${bar.height}%`,
                         bottom: `${stackedBars[i].slice(0, index).reduce((acc, b) => acc + b.height, 0)}%`,
-                        opacity: props.indicador ? 1 : 0,
+                        opacity: props.indicador || props.hoverType === bar.type ? 1 : 0,
                     }"
                 />
                 <div class="z-10">
