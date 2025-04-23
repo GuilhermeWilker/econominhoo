@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import { usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { Toaster, toast } from 'vue-sonner';
+import { Toaster } from 'vue-sonner';
 
 import Chart from '@/components/Chart.vue';
 import TransactionsStats from '@/components/transactions/Stats.vue';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import DefaultLayout from '@/layouts/DefaultLayout.vue';
 
 interface Transaction {
@@ -94,76 +93,32 @@ const saldo = totalEntradas - totalGastos;
             <article class="mt-8 flex flex-col gap-5 md:flex-row">
                 <div class="w-full md:w-6/12 lg:w-7/12">
                     <div class="size-80">
-                        <Chart :gastos="totalGastos" :entradas="totalEntradas" :investimentos="totalInvestimentos" />
+                        <div v-if="totalGeral < 1">
+                            <p>Você ainda não possui transações feitas no Econominhoo..</p>
+                            <p class="float mx-auto my-2 block w-fit text-8xl">😨</p>
+                        </div>
+                        <Chart v-else :gastos="totalGastos" :entradas="totalEntradas" :investimentos="totalInvestimentos" />
                     </div>
                 </div>
 
-                <div class="w-full md:w-6/12 lg:w-7/12">
-                    <button
-                        class="mb-3 ml-auto block w-fit cursor-pointer rounded-sm border-zinc-950 bg-zinc-800 p-1 px-4 text-sm text-white hover:bg-zinc-900"
-                        @click="
-                            () => {
-                                toast('Relatório', {
-                                    description: 'O download da planilha será feito em alguns segundos..',
-                                });
-                            }
-                        "
-                    >
-                        Exportar para planilha
-                    </button>
-
-                    <div class="h-60 overflow-y-auto">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead class="w-[100px]"> Invoice </TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Method</TableHead>
-                                    <TableHead class="text-right"> Amount </TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell class="font-medium"> INV001 </TableCell>
-                                    <TableCell>Paid</TableCell>
-                                    <TableCell>Credit Card</TableCell>
-                                    <TableCell class="text-right"> $250.00 </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell class="font-medium"> INV001 </TableCell>
-                                    <TableCell>Paid</TableCell>
-                                    <TableCell>Credit Card</TableCell>
-                                    <TableCell class="text-right"> $250.00 </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell class="font-medium"> INV001 </TableCell>
-                                    <TableCell>Paid</TableCell>
-                                    <TableCell>Credit Card</TableCell>
-                                    <TableCell class="text-right"> $250.00 </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell class="font-medium"> INV001 </TableCell>
-                                    <TableCell>Paid</TableCell>
-                                    <TableCell>Credit Card</TableCell>
-                                    <TableCell class="text-right"> $250.00 </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell class="font-medium"> INV001 </TableCell>
-                                    <TableCell>Paid</TableCell>
-                                    <TableCell>Credit Card</TableCell>
-                                    <TableCell class="text-right"> $250.00 </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell class="font-medium"> INV001 </TableCell>
-                                    <TableCell>Paid</TableCell>
-                                    <TableCell>Credit Card</TableCell>
-                                    <TableCell class="text-right"> $250.00 </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </div>
-                </div>
+                <div class="w-full md:w-6/12 lg:w-7/12"></div>
             </article>
         </section>
     </DefaultLayout>
 </template>
+
+<style scoped>
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+.float {
+    animation: float 2s ease-in-out infinite;
+}
+</style>

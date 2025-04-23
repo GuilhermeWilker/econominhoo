@@ -76,10 +76,11 @@ watch(
                     <div class="w-full">
                         <label class="block text-sm">Valor</label>
                         <input
-                            type="number"
-                            placeholder="2 400,00"
+                            type="text"
+                            placeholder="2.400,00"
                             class="w-full rounded-sm border border-zinc-400 p-2 px-4 placeholder:text-sm"
                             v-model="form.amount"
+                            @blur="form.amount = parseFloat(String(form.amount).replace(',', '.'))"
                         />
                     </div>
                     <div class="w-full">

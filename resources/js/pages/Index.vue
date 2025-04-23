@@ -1,8 +1,10 @@
 <script lang="ts" setup>
+import Status from '@/components/Status.vue';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { indicador } from '@/stores/useIndicator';
 import { usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { Toaster } from 'vue-sonner';
+import { Toaster, toast } from 'vue-sonner';
 
 import TransactionsCalendar from '@/components/transactions/Calendar.vue';
 import TransactionsStats from '@/components/transactions/Stats.vue';
@@ -92,22 +94,59 @@ const saldo = totalEntradas - totalGastos;
                 </div>
 
                 <div class="my-12 space-y-2">
-                    <div class="mb-4">
-                        <button class="ml-auto block w-fit rounded-sm bg-zinc-900 p-2 px-6 text-sm text-white">Adicionar Boleto</button>
-                    </div>
+                    <div class="h-72">
+                        <button
+                            v-if="page.props.transactions.data.length > 5"
+                            class="mb-3 ml-auto block w-fit cursor-pointer rounded-sm border-zinc-950 bg-zinc-800 p-1 px-4 text-sm text-white hover:bg-zinc-900"
+                            @click="
+                                () => {
+                                    toast('Relatório', {
+                                        description: 'O download da planilha será feito em alguns segundos..',
+                                    });
+                                }
+                            "
+                        >
+                            Exportar para planilha
+                        </button>
 
-                    <div
-                        class="group mx-auto flex w-96 items-center justify-between rounded-sm border border-zinc-300 p-4 transition-all hover:w-full hover:shadow-md"
-                    >
-                        <p class="text-sm group-hover:text-[16px]">#12 Boleto Água - <span class="font-semibold">R$ 850,40</span></p>
-                        <span class="inline-block rounded-full bg-blue-200 px-4 text-sm text-blue-600">Pago</span>
-                    </div>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead class="w-[100px]"> Descrição </TableHead>
+                                    <TableHead>Quantia (R$)</TableHead>
+                                    <TableHead>Tipo</TableHead>
+                                    <TableHead class="text-right"> Data </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow v-for="transaction in page.props.transactions.data" :key="transaction.id">
+                                    <TableCell class="max-w-14 truncate font-medium">{{ transaction.description }}</TableCell>
+                                    <TableCell>{{ __formatMoney(transaction.amount) }}</TableCell>
+                                    <TableCell>
+                                        <Status :type="transaction.type" />
+                                    </TableCell>
+                                    <TableCell class="text-right"> {{ transaction.date }} </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
 
-                    <div
-                        class="group mx-auto flex w-96 items-center justify-between rounded-sm border border-zinc-300 p-4 transition-all hover:w-full hover:shadow-md"
-                    >
-                        <p class="text-sm group-hover:text-[16px]">#24 Boleto Faculdade - <span class="font-semibold">R$ 1.350,40</span></p>
-                        <span class="inline-block rounded-full bg-orange-200 px-4 text-sm text-orange-600">Pendente</span>
+                        <div class="mt-4 flex justify-end gap-2">
+                            <button
+                                v-if="page.props.transactions.prev_page_url"
+                                class="mb-3 block w-fit cursor-pointer rounded-sm border-zinc-950 bg-zinc-800 p-1 px-4 text-sm text-white hover:bg-zinc-900"
+                                @click="$inertia.visit(page.props.transactions.prev_page_url, { only: ['transactions'], preserveScroll: true })"
+                            >
+                                Anterior
+                            </button>
+
+                            <button
+                                v-if="page.props.transactions.next_page_url"
+                                class="mb-3 block w-fit cursor-pointer rounded-sm border-zinc-950 bg-zinc-800 p-1 px-4 text-sm text-white hover:bg-zinc-900"
+                                @click="$inertia.visit(page.props.transactions.next_page_url, { only: ['transactions'], preserveScroll: true })"
+                            >
+                                Próxima
+                            </button>
+                        </div>
                     </div>
                 </div>
             </article>

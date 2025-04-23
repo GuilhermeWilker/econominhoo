@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { router, usePage } from '@inertiajs/vue3';
-import { computed, ref, watchEffect } from 'vue';
+import { computed, ref } from 'vue';
 
 import TransactionsModal from '@/components/transactions/Modal.vue';
 
@@ -37,12 +37,6 @@ const openModal = (day: number) => {
     showModal.value = true;
 };
 
-watchEffect(() => {
-    if (showModal != showModal) {
-        router.reload({ only: ['transactionsByDay'] });
-    }
-});
-
 const stackedBars = computed(() => {
     const result: Record<number, { color: string; height: number }[]> = {};
 
@@ -76,6 +70,11 @@ const stackedBars = computed(() => {
 
     return result;
 });
+
+const closeModal = () => {
+    showModal.value = false;
+    router.reload({ only: ['transactionsByDay'] });
+};
 </script>
 
 <template>
@@ -109,6 +108,6 @@ const stackedBars = computed(() => {
             </div>
         </article>
 
-        <TransactionsModal :showModal="showModal" :selectedDay="selectedDay" @close="showModal = false" />
+        <TransactionsModal :showModal="showModal" :selectedDay="selectedDay" @close="closeModal" />
     </div>
 </template>

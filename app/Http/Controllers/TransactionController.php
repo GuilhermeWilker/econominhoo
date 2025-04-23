@@ -17,12 +17,8 @@ class TransactionController extends Controller
             'date' => 'required|date',
         ]);
 
-        if ($validated) {
-            Transaction::create($validated);
+        Transaction::create($validated);
 
-            return redirect()->route('home');
-        }
-
-        return back()->with('error', 'Failed to create transaction');
+        return redirect()->route('home')->with('success', 'Transação criada com sucesso!');
     }
 }

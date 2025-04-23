@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -11,44 +13,46 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $rawTransactions = $this->rawTransactions();
+        $userId = Auth::id();
 
-        $transactionsByDay = [];
+        $rawTransactions = $this->rawTransactions($userId);
+        $transactionsByDay = $this->groupTransactionsByDay($rawTransactions);
 
-        foreach ($rawTransactions as $t) {
-            $day = (int) $t->day;
-
-            $typeMap = [
-                'income' => 'entrada',
-                'expense' => 'gasto',
-                'investment' => 'investimento',
-            ];
-
-            $type = $typeMap[$t->type] ?? $t->type;
-
-            if (!isset($transactionsByDay[$day])) {
-                $transactionsByDay[$day] = [
-                    'entrada' => 0,
-                    'gasto' => 0,
-                    'investimento' => 0,
-                ];
-            }
-
-            $transactionsByDay[$day][$type] = (int) $t->total;
-        }
+        $transactions = Transaction::where('user_id', $userId)
+            ->latest()
+            ->paginate(5)
+            ->withQueryString();
 
         return inertia('Index', [
             'transactionsByDay' => $transactionsByDay,
+            'transactions' => $transactions,
         ]);
     }
 
     public function dashboard()
     {
-        $rawTransactions = $this->rawTransactions();
+        $userId = Auth::id();
 
+        $rawTransactions = $this->rawTransactions($userId);
+        $transactionsByDay = $this->groupTransactionsByDay($rawTransactions);
+
+        $transactions = Transaction::where('user_id', $userId)
+            ->latest()
+            ->paginate(5)
+            ->withQueryString();
+
+
+        return inertia('Detailed', [
+            'transactionsByDay' => $transactionsByDay,
+            'transactions' => $transactions,
+        ]);
+    }
+
+    private function groupTransactionsByDay(Collection $rawCollection): array
+    {
         $transactionsByDay = [];
 
-        foreach ($rawTransactions as $t) {
+        foreach ($rawCollection as $t) {
             $day = (int) $t->day;
 
             $typeMap = [
@@ -70,19 +74,13 @@ class HomeController extends Controller
             $transactionsByDay[$day][$type] = (int) $t->total;
         }
 
-        return inertia('Detailed', [
-            'transactionsByDay' => $transactionsByDay,
-        ]);
+        return $transactionsByDay;
     }
 
-    private function rawTransactions()
+    private function rawTransactions(int $userId): Collection
     {
-        $userId = Auth::user()->id;
-
-        $rawTransactions = DB::table('transactions')
-            ->selectRaw(
-                "CAST(strftime('%d', date) AS INTEGER) as day, type, SUM(amount) as total"
-            )
+        return DB::table('transactions')
+            ->selectRaw("CAST(strftime('%d', date) AS INTEGER) as day, type, SUM(amount) as total")
             ->where('user_id', $userId)
             ->whereBetween('date', [
                 Carbon::now()->startOfMonth(),
@@ -90,7 +88,5 @@ class HomeController extends Controller
             ])
             ->groupBy('day', 'type')
             ->get();
-
-        return $rawTransactions;
     }
 }
