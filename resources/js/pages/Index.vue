@@ -3,7 +3,7 @@ import Status from '@/components/Status.vue';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { indicador } from '@/stores/useIndicator';
 import { usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { Toaster, toast } from 'vue-sonner';
 
 import TransactionsCalendar from '@/components/transactions/Calendar.vue';
@@ -30,22 +30,22 @@ const __formatMoney = (valor: number) => {
 
 const page = usePage();
 
-const transactions: Record<string, Transaction> = JSON.parse(JSON.stringify(page.props.transactionsByDay));
+const transactions = computed(() => page.props.transactionsByDay);
+// Computed properties
+const totalGastos = computed(() => {
+    return Object.values(transactions.value).reduce((acc, item) => acc + (item.gasto || 0), 0);
+});
 
-const totalGastos = Object.values(transactions).reduce((acc, item: any) => {
-    return acc + (item.gasto || 0);
-}, 0);
+const totalEntradas = computed(() => {
+    return Object.values(transactions.value).reduce((acc, item) => acc + (item.entrada || 0), 0);
+});
 
-const totalEntradas = Object.values(transactions).reduce((acc, item: any) => {
-    return acc + (item.entrada || 0);
-}, 0);
+const totalInvestimentos = computed(() => {
+    return Object.values(transactions.value).reduce((acc, item) => acc + (item.investimento || 0), 0);
+});
 
-const totalInvestimentos = Object.values(transactions).reduce((acc, item: any) => {
-    return acc + (item.investimento || 0);
-}, 0);
-
-const totalGeral = totalEntradas + totalGastos + totalInvestimentos;
-const saldo = totalEntradas - totalGastos;
+const totalGeral = computed(() => totalEntradas.value + totalGastos.value + totalInvestimentos.value);
+const saldo = computed(() => totalEntradas.value - totalGastos.value);
 </script>
 
 <template>

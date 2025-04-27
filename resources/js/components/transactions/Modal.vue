@@ -30,11 +30,13 @@ const form = useForm({
 });
 
 watch(
-    fullDate,
-    (newDate) => {
-        form.date = newDate;
+    () => props.showModal,
+    (isVisible) => {
+        if (isVisible) {
+            form.reset();
+            form.date = fullDate.value;
+        }
     },
-    { immediate: true },
 );
 </script>
 
@@ -50,7 +52,6 @@ watch(
                 @submit.prevent="
                     form.post('/transaction', {
                         onSuccess: () => {
-                            form.reset();
                             emit('close');
                             toast(fullDate, {
                                 description: 'A transação foi adicionada com sucesso.',
@@ -59,6 +60,7 @@ watch(
                                 },
                             });
 
+                            form.reset();
                             router.reload({ only: ['transactionsByDay'] });
                         },
                     })

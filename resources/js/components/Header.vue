@@ -20,11 +20,11 @@ const toggleIndicador = () => {
 <template>
     <div class="mb-2 flex w-full items-end justify-end gap-10">
         <div class="mr-auto w-fit">
-            <Link v-if="page.url === '/'" href="/detailed" class="underline-offset-4 hover:underline"> Ver mais detalhes </Link>
+            <Link v-if="page.url !== '/detailed'" href="/detailed" class="underline-offset-4 hover:underline"> Ver mais detalhes </Link>
 
             <Link v-else="page.url === '/detailed'" href="/" class="underline-offset-4 hover:underline"> Voltar a home </Link>
         </div>
-        <p v-if="page.url === '/'" @click="toggleIndicador" class="w-fit cursor-pointer select-none">
+        <p v-if="page.url !== '/detailed'" @click="toggleIndicador" class="w-fit cursor-pointer select-none">
             Indicadores <span class="font-semibold text-zinc-700">{{ indicador ? 'Ativos' : 'Desligado' }}</span>
         </p>
 

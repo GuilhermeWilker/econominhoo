@@ -30,7 +30,7 @@ const firstDayOfMonth = computed(() => {
 
 const actualDay = computed(() => new Date().getDate());
 
-const transactions = JSON.parse(JSON.stringify(page.props.transactionsByDay));
+const transactions = computed(() => JSON.parse(JSON.stringify(page.props.transactionsByDay)));
 
 const openModal = (day: number) => {
     selectedDay.value = day.toString();
@@ -40,7 +40,7 @@ const openModal = (day: number) => {
 const stackedBars = computed(() => {
     const result: Record<number, { color: string; height: number }[]> = {};
 
-    for (const [dayStr, data] of Object.entries(transactions)) {
+    for (const [dayStr, data] of Object.entries(transactions.value)) {
         const day = parseInt(dayStr);
         const entrada = data.entrada || 0;
         const gasto = data.gasto || 0;
