@@ -25,6 +25,7 @@ const form = useForm({
     user_id: page.props.auth?.user.id,
     date: null as string | null,
     type: null,
+    category: 'bills',
     amount: null,
     description: null,
 });
@@ -94,6 +95,19 @@ watch(
                             <option value="expense">Gasto</option>
                         </select>
                     </div>
+                </div>
+
+                <div class="w-full" v-if="form.type === 'expense'">
+                    <label class="block text-sm">Categoria</label>
+                    <select class="w-full rounded-sm border border-zinc-400 p-2" v-model="form.category">
+                        <option value="bills">Conta</option>
+                        <option value="market" selected>Mercado</option>
+                        <!-- Esta opção será selecionada por padrão -->
+                        <option value="housing">Moradia</option>
+                        <option value="health">Saúde</option>
+                        <option value="leisure">Lazer</option>
+                        <option value="other">Outro</option>
+                    </select>
                 </div>
 
                 <button class="w-full rounded-sm bg-zinc-900 p-2 px-6 text-sm text-white">Adicionar Boleto</button>

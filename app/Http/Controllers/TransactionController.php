@@ -14,6 +14,7 @@ class TransactionController extends Controller
             'description' => 'required|string|max:255',
             'amount' => 'required|numeric',
             'type' => 'required|in:income,expense,investment',
+            'category' => 'nullable|string|max:255',
             'date' => 'required|date',
         ]);
 

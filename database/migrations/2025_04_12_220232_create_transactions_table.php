@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->date('date');
             $table->enum('type', ['income', 'expense', 'investment']);
+            $table->string('category')->nullable();
             $table->decimal('amount', 10, 2);
             $table->string('description');
             $table->timestamps();
