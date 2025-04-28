@@ -4,10 +4,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <link rel="shortcut icon" href="/icon.png" type="image/x-icon">
     {{-- Inline script to detect system dark mode preference and apply it immediately --}}
     <script>
-        (function() {
+        (function () {
             const appearance = '{{ $appearance ?? 'system' }}';
 
             if (appearance === 'system') {
