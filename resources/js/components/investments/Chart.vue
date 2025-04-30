@@ -1,13 +1,15 @@
 <script setup>
 import { Chart, registerables } from 'chart.js';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 Chart.register(...registerables);
 
 const props = defineProps({
-    gastos: Number,
-    entradas: Number,
-    investimentos: Number,
+    transactions: Array,
+});
+
+const investments = computed(() => {
+    return props.transactions.filter((transaction) => transaction.type === 'investment');
 });
 
 const chartRef = ref(null);
@@ -16,14 +18,14 @@ onMounted(() => {
     if (!chartRef.value) return;
 
     new Chart(chartRef.value, {
-        type: 'pie',
+        type: 'doughnut',
         data: {
-            labels: ['Gastos', 'Entradas', 'Investimentos'],
+            labels: [...investments.value.map((t) => t.category)],
             datasets: [
                 {
-                    data: [props.gastos, props.entradas, props.investimentos],
-                    backgroundColor: ['#f97316', '#22c55e', '#3b82f6'],
-                    borderColor: '#fff',
+                    data: [...investments.value.map((t) => t.amount)],
+                    backgroundColor: ['#3b82f6', '#2563eb', '#6366f1', '#4f46e5', '#ec4899', '#db2777'],
+                    borderColor: '#eee',
                     borderWidth: 3,
                 },
             ],
@@ -31,8 +33,17 @@ onMounted(() => {
         options: {
             responsive: true,
             plugins: {
+                title: {
+                    display: true,
+                    text: 'Distribuição de Investimentos',
+                    font: {
+                        size: 14,
+                        weight: 'bold',
+                    },
+                },
                 legend: {
-                    position: 'bottom',
+                    display: false,
+                    position: 'right',
                 },
                 tooltip: {
                     callbacks: {

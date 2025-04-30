@@ -24,8 +24,8 @@ const fullDate = computed(() => {
 const form = useForm({
     user_id: page.props.auth?.user.id,
     date: null as string | null,
-    type: null,
-    category: 'bills',
+    type: '',
+    category: '',
     amount: null,
     description: null,
 });
@@ -69,8 +69,19 @@ watch(
                 class="space-y-4"
             >
                 <div>
-                    <label class="block text-sm">Descrição</label>
-                    <input type="text" placeholder="Descrição" class="w-full rounded-sm border border-zinc-400 p-2 px-4" v-model="form.description" />
+                    <div v-if="form.type === 'investment'">
+                        <label class="block text-sm">Ação ou Ativo</label>
+                        <input type="text" placeholder="PRIO3" class="w-full rounded-sm border border-zinc-400 p-2 px-4" v-model="form.description" />
+                    </div>
+                    <div v-else>
+                        <label class="block text-sm">Descrição</label>
+                        <input
+                            type="text"
+                            placeholder="Descrição"
+                            class="w-full rounded-sm border border-zinc-400 p-2 px-4"
+                            v-model="form.description"
+                        />
+                    </div>
                 </div>
 
                 <input type="hidden" v-model="form.date" />
@@ -86,6 +97,7 @@ watch(
                             @blur="form.amount = parseFloat(String(form.amount).replace(',', '.'))"
                         />
                     </div>
+
                     <div class="w-full">
                         <label class="block text-sm">Tipo</label>
                         <select class="w-full rounded-sm border border-zinc-400 p-2" v-model="form.type">
@@ -97,16 +109,29 @@ watch(
                     </div>
                 </div>
 
+                <div class="w-full" v-if="form.type === 'investment'">
+                    <label class="block text-sm">Categoria de investimento</label>
+                    <select class="w-full rounded-sm border border-zinc-400 p-2" v-model="form.category">
+                        <option value="" disabled selected>Selecione a categoria</option>
+                        <option value="Ações">Ações</option>
+                        <option value="Fii">Fii</option>
+                        <option value="ETF">ETF</option>
+                        <option value="CDB">CDB</option>
+                        <option value="LCI/LCA">LCI/LCA</option>
+                        <option value="Criptoativo">Criptoativo</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+
                 <div class="w-full" v-if="form.type === 'expense'">
                     <label class="block text-sm">Categoria</label>
                     <select class="w-full rounded-sm border border-zinc-400 p-2" v-model="form.category">
-                        <option value="bills">Conta</option>
-                        <option value="market" selected>Mercado</option>
-                        <!-- Esta opção será selecionada por padrão -->
-                        <option value="housing">Moradia</option>
-                        <option value="health">Saúde</option>
-                        <option value="leisure">Lazer</option>
-                        <option value="other">Outro</option>
+                        <option value="Contas">Conta</option>
+                        <option value="Mercado" selected>Mercado</option>
+                        <option value="Moradia">Moradia</option>
+                        <option value="Saúde">Saúde</option>
+                        <option value="Lazer">Lazer</option>
+                        <option value="Outro">Outro</option>
                     </select>
                 </div>
 

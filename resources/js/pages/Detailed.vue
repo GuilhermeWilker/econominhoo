@@ -4,7 +4,10 @@ import { ref } from 'vue';
 import { Toaster } from 'vue-sonner';
 
 import Chart from '@/components/Chart.vue';
+import InvestmentsChart from '@/components/investments/Chart.vue';
+import TransactionsChart from '@/components/transactions/Chart.vue';
 import TransactionsStats from '@/components/transactions/Stats.vue';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import DefaultLayout from '@/layouts/DefaultLayout.vue';
 
 interface Transaction {
@@ -91,7 +94,7 @@ const saldo = totalEntradas - totalGastos;
             </artcile>
 
             <article class="mt-8 flex flex-col gap-5 md:flex-row">
-                <div class="w-full md:w-6/12 lg:w-7/12">
+                <div class="w-full space-y-8 md:w-6/12 lg:w-7/12">
                     <div class="size-80">
                         <div v-if="totalGeral < 1">
                             <p>Você ainda não possui transações feitas no Econominhoo..</p>
@@ -99,9 +102,75 @@ const saldo = totalEntradas - totalGastos;
                         </div>
                         <Chart v-else :gastos="totalGastos" :entradas="totalEntradas" :investimentos="totalInvestimentos" />
                     </div>
+
+                    <div class="size-80" v-if="$page.props.transactions.data.length > 0">
+                        <TransactionsChart :transactions="$page.props.transactions.data" />
+                    </div>
                 </div>
 
-                <div class="w-full md:w-6/12 lg:w-7/12"></div>
+                <div class="w-full space-y-2 md:w-6/12 lg:w-7/12">
+                    <div class="mb-18 h-72">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead class="w-[100px]"> </TableHead>
+                                    <TableHead>Sigla</TableHead>
+                                    <TableHead class="text-right">Valor atual</TableHead>
+                                    <TableHead class="text-right"> Variação de mercado </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell class="max-w-14 truncate font-medium">
+                                        <img src="https://icons.brapi.dev/icons/WEGE3.svg" class="size-8 rounded-sm" alt="" />
+                                    </TableCell>
+                                    <TableCell>WEGE3</TableCell>
+                                    <TableCell class="text-right"> R$ 48,76 </TableCell>
+                                    <TableCell class="text-right"> R$ 0,43 (0.86%)▲</TableCell>
+                                </TableRow>
+
+                                <TableRow>
+                                    <TableCell class="max-w-14 truncate font-medium">
+                                        <img src="https://icons.brapi.dev/icons/FLRY3.svg" class="size-8 rounded-sm" alt="" />
+                                    </TableCell>
+                                    <TableCell>FLRY3</TableCell>
+                                    <TableCell class="text-right"> R$ 38,48 </TableCell>
+                                    <TableCell class="text-right"> -R$ 0,01 (-0.08%)▼</TableCell>
+                                </TableRow>
+
+                                <TableRow>
+                                    <TableCell class="max-w-14 truncate font-medium">
+                                        <img src="https://icons.brapi.dev/icons/PETZ3.svg" class="size-8 rounded-sm" alt="" />
+                                    </TableCell>
+                                    <TableCell>PETZ3</TableCell>
+                                    <TableCell class="text-right"> R$ 18,08 </TableCell>
+                                    <TableCell class="text-right"> R$ 0,73 (0.86%)▲</TableCell>
+                                </TableRow>
+
+                                <TableRow>
+                                    <TableCell class="max-w-14 truncate font-medium">
+                                        <img src="https://icons.brapi.dev/icons/PETZ3.svg" class="size-8 rounded-sm" alt="" />
+                                    </TableCell>
+                                    <TableCell>PETZ3</TableCell>
+                                    <TableCell class="text-right"> R$ 18,08 </TableCell>
+                                    <TableCell class="text-right"> R$ 0,73 (0.86%)▲</TableCell>
+                                </TableRow>
+
+                                <TableRow>
+                                    <TableCell class="max-w-14 truncate font-medium">
+                                        <img src="https://icons.brapi.dev/icons/PETZ3.svg" class="size-8 rounded-sm" alt="" />
+                                    </TableCell>
+                                    <TableCell>PETZ3</TableCell>
+                                    <TableCell class="text-right"> R$ 18,08 </TableCell>
+                                    <TableCell class="text-right"> R$ 0,73 (0.86%)▲</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
+                    <div class="size-80" v-if="$page.props.transactions.data.length > 0">
+                        <InvestmentsChart :transactions="$page.props.transactions.data" />
+                    </div>
+                </div>
             </article>
         </section>
     </DefaultLayout>
