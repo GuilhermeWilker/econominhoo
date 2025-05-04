@@ -45,7 +45,7 @@ const totalInvestimentos = Object.values(transactions).reduce((acc, item: any) =
 }, 0);
 
 const totalGeral = totalEntradas + totalGastos + totalInvestimentos;
-const saldo = totalEntradas - totalGastos;
+const saldo = totalEntradas - totalGastos - totalInvestimentos;
 </script>
 
 <template>
@@ -120,49 +120,17 @@ const saldo = totalEntradas - totalGastos;
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <TableRow>
-                                    <TableCell class="max-w-14 truncate font-medium">
-                                        <img src="https://icons.brapi.dev/icons/WEGE3.svg" class="size-8 rounded-sm" alt="" />
+                                <TableRow v-for="stock in $page.props.portfolio" :key="stock.id">
+                                    <TableCell>
+                                        <img :src="stock.logo_url" class="size-8 rounded-sm" alt="" />
                                     </TableCell>
-                                    <TableCell>WEGE3</TableCell>
-                                    <TableCell class="text-right"> R$ 48,76 </TableCell>
-                                    <TableCell class="text-right"> R$ 0,43 (0.86%)▲</TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell class="max-w-14 truncate font-medium">
-                                        <img src="https://icons.brapi.dev/icons/FLRY3.svg" class="size-8 rounded-sm" alt="" />
+                                    <TableCell>{{ stock.symbol }}</TableCell>
+                                    <TableCell class="text-right"> R$ {{ stock.current_value }}</TableCell>
+                                    <TableCell class="text-right">
+                                        {{ stock.market_variation }} ({{ stock.market_variation_pct }}%)
+                                        <span v-if="stock.market_variation_pct >= 0" class="text-green-600"> ▲ </span>
+                                        <span v-else class="text-red-600">▼</span>
                                     </TableCell>
-                                    <TableCell>FLRY3</TableCell>
-                                    <TableCell class="text-right"> R$ 38,48 </TableCell>
-                                    <TableCell class="text-right"> -R$ 0,01 (-0.08%)▼</TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell class="max-w-14 truncate font-medium">
-                                        <img src="https://icons.brapi.dev/icons/PETZ3.svg" class="size-8 rounded-sm" alt="" />
-                                    </TableCell>
-                                    <TableCell>PETZ3</TableCell>
-                                    <TableCell class="text-right"> R$ 18,08 </TableCell>
-                                    <TableCell class="text-right"> R$ 0,73 (0.86%)▲</TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell class="max-w-14 truncate font-medium">
-                                        <img src="https://icons.brapi.dev/icons/PETZ3.svg" class="size-8 rounded-sm" alt="" />
-                                    </TableCell>
-                                    <TableCell>PETZ3</TableCell>
-                                    <TableCell class="text-right"> R$ 18,08 </TableCell>
-                                    <TableCell class="text-right"> R$ 0,73 (0.86%)▲</TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell class="max-w-14 truncate font-medium">
-                                        <img src="https://icons.brapi.dev/icons/PETZ3.svg" class="size-8 rounded-sm" alt="" />
-                                    </TableCell>
-                                    <TableCell>PETZ3</TableCell>
-                                    <TableCell class="text-right"> R$ 18,08 </TableCell>
-                                    <TableCell class="text-right"> R$ 0,73 (0.86%)▲</TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>

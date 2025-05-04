@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Transaction;
 use Carbon\Carbon;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
+use App\Models\InvestmentData;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class HomeController extends Controller
 {
@@ -33,6 +35,14 @@ class HomeController extends Controller
     {
         $userId = Auth::id();
 
+        $stocks = Auth::user()->transactions()
+            ->where('type', 'investment')
+            ->whereNotNull('symbol')
+            ->get();
+
+        $portfolio = InvestmentData::whereIn('symbol', $stocks->pluck('description'))
+            ->get();
+
         $rawTransactions = $this->rawTransactions($userId);
         $transactionsByDay = $this->groupTransactionsByDay($rawTransactions);
 
@@ -45,6 +55,7 @@ class HomeController extends Controller
         return inertia('Detailed', [
             'transactionsByDay' => $transactionsByDay,
             'transactions' => $transactions,
+            'portfolio' => $portfolio,
         ]);
     }
 

@@ -45,7 +45,7 @@ const totalInvestimentos = computed(() => {
 });
 
 const totalGeral = computed(() => totalEntradas.value + totalGastos.value + totalInvestimentos.value);
-const saldo = computed(() => totalEntradas.value - totalGastos.value);
+const saldo = computed(() => totalEntradas.value - totalGastos.value - totalInvestimentos.value);
 </script>
 
 <template>

@@ -20,7 +20,7 @@ onMounted(() => {
     new Chart(chartRef.value, {
         type: 'doughnut',
         data: {
-            labels: [...investments.value.map((t) => t.category)],
+            labels: [...investments.value.map((t) => t.description)],
             datasets: [
                 {
                     data: [...investments.value.map((t) => t.amount)],
